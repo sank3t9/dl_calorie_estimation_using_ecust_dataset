@@ -1,35 +1,51 @@
-# 🍎 Calorie Estimation from Food Images
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![Deep Learning](https://img.shields.io/badge/Object%20Detection-YOLOv8-orange.svg)
-![Segmentation](https://img.shields.io/badge/Segmentation-GrabCut-yellow.svg)
-![Streamlit](https://img.shields.io/badge/Streamlit-App-green.svg)
+# 🍎 DeepDish - Deep Learning Calorie Estimator 
 
-This project implements an end-to-end deep learning pipeline that estimates the **volume, mass, and calorie content** of food items using a **top** and **side** image.  
-The system combines object detection, segmentation, geometric modeling, and nutritional density mapping to deliver accurate, image-based calorie estimation.  
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![YOLOv8](https://img.shields.io/badge/Object%20Detection-YOLOv8-orange.svg)](https://github.com/ultralytics/ultralytics)
+[![Streamlit](https://img.shields.io/badge/App-Streamlit-green.svg)](https://streamlit.io/)
+
+**An end-to-end deep learning pipeline that estimates food volume, mass, and calories using top and side-view images.**
+
+---
+
+### 🎥 [Watch the Video Demo](https://youtu.be/zN8sgxGbPHs)
 
 ---
 
 ## 🚀 Features
-- YOLOv8 for fast, accurate food + coin detection  
-- Comparison with Faster R-CNN and a custom YOLO-from-scratch model  
-- GrabCut segmentation to isolate food boundaries  
-- Geometric modeling for volume estimation (ellipsoid, cylinder, irregular shapes)  
-- Calorie prediction using density × volume × kcal/g  
-- Streamlit web application for real-time estimation
+* **Dual-View Analysis**: Uses **Top** and **Side** images with a reference coin for accurate 3D volume estimation.
+* **Object Detection**: Utilizes **YOLOv8** for real-time food and coin detection.
+* **Precise Segmentation**: Implements **GrabCut** to isolate food boundaries from the background.
+* **Geometric Modeling**: Calculates volume using shape-specific formulas (Ellipsoid, Column, Irregular).
+* **Interactive App**: Real-time analysis via a **Streamlit** web interface.
 
----
+## 📊 Performance
+I benchmarked three object detection models on the **ECUST Food Dataset** (19 classes) to determine the best approach for this pipeline:
 
-## 📊 Dataset
-- **ECUST Food Dataset** with top + side views  
-- 2,000+ images across 19 food classes  
-- Includes a **One Yuan Coin** for metric scale calibration  
+| Model | mAP@0.5 | Precision | F1 Score | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| **YOLOv8** | **0.882** | **0.964** | **0.949** | **Selected for Pipeline (Best Balance)** |
+| Faster R-CNN | 0.975 | 0.670 | 0.799 | Highest mAP, but slower inference |
+| Custom YOLO | 0.189 | 0.402 | 0.480 | Baseline comparison |
 
----
+## 🧠 How It Works
+1.  **Input**: Users upload Top & Side images containing the food and a One Yuan coin.
+2.  **Detection**: The system (YOLOv8) locates the food item and the coin.
+3.  **Segmentation**: GrabCut generates a binary mask of the food to refine boundaries.
+4.  **Scaling**: The coin serves as a reference to convert pixel measurements to centimeters.
+5.  **Estimation**: 
+    * **Volume**: Calculated based on shape (e.g., Apple $\rightarrow$ Ellipsoid, Bread $\rightarrow$ Column).
+    * **Calories**: $Volume \times Density \times Energy (kcal/g)$.
 
-## 🧠 Pipeline Overview
-1. Detect food item + reference coin using YOLOv8  
-2. Segment food using GrabCut  
-3. Convert pixel measurements to centimeters using the coin  
-4. Estimate 3D volume using geometric assumptions  
-5. Convert: **Volume → Mass → Calories**  
-6. Display results via Streamlit
+## 🛠️ Quick Start
+
+**1. Install Dependencies**
+```bash
+pip install ultralytics streamlit opencv-python numpy
+```
+
+**2. Run the App**
+
+```bash
+streamlit run app.py
+```
